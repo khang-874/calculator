@@ -28,21 +28,29 @@ let currentString = "";
 let firstNumber = null;
 let secondNumber = null;
 let operator = "";
+let isFloat = false;
+let precision = 2;
 
-function getResult(firstNumber, secondNumber, operator){
+function getResult(firstNumber, secondNumber, operator, isFloat){
     if(operator == "+")
-        return firstNumber + secondNumber;
+        return getNumber(firstNumber + secondNumber, isFloat);
     if(operator == "-")
-        return firstNumber - secondNumber;
+        return getNumber(firstNumber - secondNumber, isFloat);
     if(operator == "*")
-        return firstNumber * secondNumber;
+        return getNumber(firstNumber * secondNumber, isFloat);
     if(operator == "/")
         if(secondNumber != 0)
-            return firstNumber / secondNumber;
+            return getNumber(firstNumber / secondNumber, isFloat);
         else
             return "Divide by 0";
 }
 function getNumber(str, float){
+    if(typeof str != "string")
+    {
+        if(float)
+            return parseFloat(parseFloat(str).toFixed(precision));
+        return parseInt(str);
+    }
     if(str == "")
     {
         if(float)
@@ -50,15 +58,17 @@ function getNumber(str, float){
         return 0;
     }
     if(float)
-        return parseFloat(str);
+        return parseFloat(parseFloat(str).toFixed(precision));
     return parseInt(str);
 }
 
 let operationPressed = false;
 resultDiv.innerText = "0";
 function eventHandler(e){
-    if(acceptedKey[e.key] == 1)
+    if(acceptedKey[e.key] == 1 || acceptedKey[e.key] == 5)
     {
+        if(acceptedKey[e.key] == 5)
+            isFloat = true;
         currentString += e.key;
         resultDiv.innerText = currentString;
     }else if(acceptedKey[e.key] == 3)
@@ -71,6 +81,7 @@ function eventHandler(e){
         else
         {
             firstNumber = null;
+            isFloat = false;
             operator = "";
             resultDiv.innerText = "0";
         }
@@ -79,7 +90,7 @@ function eventHandler(e){
         if(operator == "")
         {
             if(firstNumber == null)
-                firstNumber = getNumber(currentString);
+                firstNumber = getNumber(currentString, isFloat);
             operator = e.key;
             resultDiv.innerText = "0";
             currentString = "";
@@ -88,11 +99,22 @@ function eventHandler(e){
         {
             if(currentString != "")
             {
-                secondNumber = getNumber(currentString);
-                firstNumber = getResult(firstNumber, secondNumber, operator);
-                operator = e.key;
-                currentString = "";
-                resultDiv.innerText = firstNumber;
+                secondNumber = getNumber(currentString, isFloat);
+                let result = getResult(firstNumber, secondNumber, operator, isFloat);
+                if(typeof result == "string")
+                {
+                    firstNumber = null;
+                    operator = "";
+                    currentString = "";
+                    resultDiv.innerText = "Divide by 0";
+                }
+                else
+                {
+                    firstNumber = result;
+                    operator = e.key;
+                    currentString = "";
+                    resultDiv.innerText = firstNumber;
+                }
             }
             else
                 operator = e.key;
@@ -101,15 +123,26 @@ function eventHandler(e){
     {
         if(operator != "")
         {
-            secondNumber = getNumber(currentString);
-            firstNumber = getResult(firstNumber, secondNumber, operator);
-            operator = "";
-            resultDiv.innerText = firstNumber;
-            currentString = "";
+            secondNumber = getNumber(currentString, isFloat);
+            let result = getResult(firstNumber, secondNumber, operator, isFloat);
+            if(typeof result == "string")
+            {
+                firstNumber = null;
+                operator = "";
+                currentString = "";
+                resultDiv.innerText = "Divide by 0";
+            }
+            else
+            {  
+                firstNumber = result;
+                operator = "";
+                resultDiv.innerText = firstNumber;
+                currentString = "";
+            }
         }
         else
         {
-            firstNumber = getNumber(currentString);
+            firstNumber = getNumber(currentString, isFloat);
             resultDiv.innerText = firstNumber;
             currentString = "";
 
