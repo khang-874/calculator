@@ -6,14 +6,16 @@ const acceptedKey = {};
 function initializeAcceptedKey(){
     for(let i = 0; i < 10; ++i)
         acceptedKey[`${i}`] = 1;
-    acceptedKey["/"] = 2
-    acceptedKey["*"] = 2
-    acceptedKey["+"] = 2
-    acceptedKey["-"] = 2
-    acceptedKey["="] = 4
-    acceptedKey["Backspace"] = 3
+    acceptedKey["/"] = 2;
+    acceptedKey["*"] = 2;
+    acceptedKey["+"] = 2;
+    acceptedKey["-"] = 2;
+    acceptedKey["="] = 4;
+    acceptedKey["Backspace"] = 3;
     acceptedKey["Enter"] = 4;
     acceptedKey["."] = 5;
+    acceptedKey["Del"] = 3;
+    acceptedKey["DA"] = 3;
 }
 initializeAcceptedKey();
 /*
@@ -64,34 +66,33 @@ function getNumber(str, float){
 
 let operationPressed = false;
 resultDiv.innerText = "0";
-function eventHandler(e){
-    if(acceptedKey[e.key] == 1 || acceptedKey[e.key] == 5)
+function eventHandler(key){
+    if(acceptedKey[key] == 1 || acceptedKey[key] == 5)
     {
-        if(acceptedKey[e.key] == 5)
+        if(acceptedKey[key] == 5)
             isFloat = true;
-        currentString += e.key;
+        currentString += key;
         resultDiv.innerText = currentString;
-    }else if(acceptedKey[e.key] == 3)
+    }else if(acceptedKey[key] == 3)
     {
-        if(currentString != "")
-        {
-            currentString = currentString.slice(0, currentString.length - 1);
-            resultDiv.innerText = currentString;
-        }
-        else
+        if(currentString == "" || key == "DA")
         {
             firstNumber = null;
             isFloat = false;
             operator = "";
             resultDiv.innerText = "0";
+        }else 
+        {
+            currentString = currentString.slice(0, currentString.length - 1);
+            resultDiv.innerText = currentString;
         }
-    }else if(acceptedKey[e.key] == 2)
+    }else if(acceptedKey[key] == 2)
     {
         if(operator == "")
         {
             if(firstNumber == null)
                 firstNumber = getNumber(currentString, isFloat);
-            operator = e.key;
+            operator = key;
             resultDiv.innerText = "0";
             currentString = "";
         }
@@ -111,15 +112,15 @@ function eventHandler(e){
                 else
                 {
                     firstNumber = result;
-                    operator = e.key;
+                    operator = key;
                     currentString = "";
                     resultDiv.innerText = firstNumber;
                 }
             }
             else
-                operator = e.key;
+                operator = key;
         }
-    }else if(acceptedKey[e.key] == 4)
+    }else if(acceptedKey[key] == 4)
     {
         if(operator != "")
         {
@@ -149,6 +150,77 @@ function eventHandler(e){
         }
     }
 }
-window.addEventListener("keydown", eventHandler);
+window.addEventListener("keydown", e => {
+    eventHandler(e.key);
+});
 
+let numPad = document.createElement("div");
+numPad.id = "numPad";
+{
+    let currentNumber = 0;
+    for(let i = 1; i <= 3; ++i)
+        for(let j = 1;j <= 3; ++j){
+            let pad = document.createElement("div");
+            pad.classList.add("button");
+            pad.innerText = ++currentNumber;
+            pad.style = `grid-row:${i+1}; grid-column: ${j}`;
+            pad.addEventListener("mousedown", e => {
+                eventHandler(e.target.innerText);
+            })
+            numPad.appendChild(pad);
+        }
+    
+    let remain = [];
+    {
+    remain = [{
+        text: "0",
+        row: 4,
+        col: 1
+    },{
+        text: ".",
+        row: 4,
+        col: 2
+    },{
+        text: "+",
+        row: 4,
+        col: 3
+    }, {
+        text: "=",
+        row: 4,
+        col: 4
+    }, {
+        text: "-",
+        row: 3,
+        col: 4
+    }, {
+        text: "*",
+        row: 2,
+        col: 4
+    }, {
+        text: "/",
+        row: 1,
+        col: 4
+    }, {
+        text: "Del",
+        row: 0,
+        col: 4
+    }, {
+        text: "DA",
+        row: 0,
+        col: 3
+    }];
+    }
+    for(let i = 0; i < remain.length; ++i){
+        let pad = document.createElement("div");
+        pad.innerText = remain[i].text;
+        pad.classList.add("button");
+        pad.style = `grid-row: ${remain[i].row+1}; grid-column: ${remain[i].col}`;
+        pad.addEventListener("mousedown", e =>{
+            eventHandler(e.target.innerText);
+        });
+        numPad.appendChild(pad);
+    }
+
+}
 container.appendChild(resultDiv);
+container.appendChild(numPad);
