@@ -42,7 +42,7 @@ function getResult(firstNumber, secondNumber, operator, isFloat){
         return getNumber(firstNumber * secondNumber, isFloat);
     if(operator == "/")
         if(secondNumber != 0)
-            return getNumber(firstNumber / secondNumber, isFloat);
+            return getNumber(firstNumber / secondNumber, true);
         else
             return "Divide by 0";
 }
