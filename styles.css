@@ -1,10 +1,27 @@
-#resultDiv{
-    border: 1px solid;
-    height: 30px;
-    width: 200px;
-
+*{
+    box-sizing: border-box;
 }
 
+.result{
+    border: 1px solid;
+    width: 100%;
+    padding-left: 8px;
+    padding-right: 8px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    text-align: right;
+}
+
+#resultDiv{
+    font-size: 32px;
+    height: 70px;
+}
+
+#currentPhraseDiv{
+    font-size: 24px;
+    height: 50px;
+}
 #numPad{
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -14,7 +31,7 @@
     margin-top: 10px;
 }
 
-#container, #resultDiv, .button{
+#container, .result , .button{
     border-radius: 7px;
     margin: 0;
     padding: 0;
@@ -33,7 +50,7 @@
 #container{
     border: 1px solid black;
     width: 350px;
-    height: 300px;
+    height: 380px;
     margin-top: 80px;   
     padding: 15px;
 }
@@ -46,14 +63,6 @@
     justify-content: center;
     gap: 15px;
 }
-
-#resultDiv{
-    width: 100%;
-    padding-left: 8px;
-    padding-right: 8px;
-    overflow: hidden;
-}
-
 
 body{
     font-size: 28px;
@@ -70,6 +79,7 @@ footer{
     font-size: 18px;
     
 }
-*{
-    box-sizing: border-box;
+
+#outerResultDiv{
+
 }

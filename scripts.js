@@ -14,8 +14,8 @@ function initializeAcceptedKey(){
     acceptedKey["Backspace"] = 3;
     acceptedKey["Enter"] = 4;
     acceptedKey["."] = 5;
-    acceptedKey["Del"] = 3;
-    acceptedKey["DA"] = 3;
+    acceptedKey["Delete"] = 3;
+    acceptedKey["Clear"] = 3;
 }
 initializeAcceptedKey();
 /*
@@ -66,7 +66,24 @@ function getNumber(str, float){
 
 let operationPressed = false;
 resultDiv.innerText = "0";
+resultDiv.classList.add("result")
+let outerResultDiv = document.createElement("div");
+outerResultDiv.id = "outerResultDiv";
+
+let currentPhraseDiv = document.createElement("div");
+let currentPhrase = "";
+currentPhraseDiv.id = "currentPhraseDiv";
+currentPhraseDiv.classList.add("result");
+
+outerResultDiv.appendChild(currentPhraseDiv);
+outerResultDiv.appendChild(resultDiv);
+let resultHit = false;
 function eventHandler(key){
+    if(acceptedKey[key] && resultHit)
+        {
+            resultHit = false;
+            currentPhrase = firstNumber;
+        }
     if(acceptedKey[key] == 1 || acceptedKey[key] == 5)
     {
         if(currentString != "" || key != "0"){    
@@ -77,12 +94,14 @@ function eventHandler(key){
         }
     }else if(acceptedKey[key] == 3)
     {
-        if(currentString == "" || key == "DA")
+        if(currentString == "" || key == "Clear")
         {
             firstNumber = null;
             isFloat = false;
             operator = "";  
             resultDiv.innerText = "0";
+            currentString = "";
+            currentPhrase = "";
         }else 
         {
             currentString = currentString.slice(0, currentString.length - 1);
@@ -92,11 +111,14 @@ function eventHandler(key){
     {
         if(operator == "")
         {
-            if(firstNumber == null)
+            if(firstNumber == null){
                 firstNumber = getNumber(currentString, isFloat);
+                currentPhrase += firstNumber;
+            }
             operator = key;
             resultDiv.innerText = "0";
             currentString = "";
+            currentPhrase += key;
         }
         else
         {
@@ -110,6 +132,7 @@ function eventHandler(key){
                     operator = "";
                     currentString = "";
                     resultDiv.innerText = "Divide by 0";
+                    currentPhrase = "";
                 }
                 else
                 {
@@ -117,10 +140,13 @@ function eventHandler(key){
                     operator = key;
                     currentString = "";
                     resultDiv.innerText = firstNumber;
+                    currentPhrase = result + operator;
                 }
             }
-            else
+            else{
                 operator = key;
+                currentPhrase[currentPhrase.length - 1] = operator; 
+            }
         }
     }else if(acceptedKey[key] == 4)
     {
@@ -134,6 +160,7 @@ function eventHandler(key){
                 operator = "";
                 currentString = "";
                 resultDiv.innerText = "Divide by 0";
+                currentPhrase = "";
             }
             else
             {  
@@ -141,16 +168,14 @@ function eventHandler(key){
                 operator = "";
                 resultDiv.innerText = firstNumber;
                 currentString = "";
+                currentPhrase += secondNumber;
+                currentPhrase += "=";
+                currentPhrase += firstNumber;
+                resultHit = true;
             }
         }
-        else
-        {
-            firstNumber = getNumber(currentString, isFloat);
-            resultDiv.innerText = firstNumber;
-            currentString = "";
-
-        }
     }
+    currentPhraseDiv.innerText = currentPhrase;
 }
 window.addEventListener("keydown", e => {
     eventHandler(e.key);
@@ -165,7 +190,8 @@ numPad.id = "numPad";
             let pad = document.createElement("div");
             pad.classList.add("button");
             pad.innerText = ++currentNumber;
-            pad.style = `grid-row:${i+1}; grid-column: ${j}`;
+            pad.style = `grid-area: ${i+1} / ${j} / ${i+2} / ${j + 1}`;
+            console.log(`${i} / ${j} / ${i +1} / ${j + 1}`);
             pad.addEventListener("mousedown", e => {
                 eventHandler(e.target.innerText);
             })
@@ -176,39 +202,39 @@ numPad.id = "numPad";
     {
     remain = [{
         text: "0",
-        row: 4,
+        row: 5,
         col: 1
     },{
         text: ".",
-        row: 4,
+        row: 5,
         col: 2
     },{
         text: "+",
-        row: 4,
+        row: 5,
         col: 3
     }, {
         text: "=",
-        row: 4,
+        row: 5,
         col: 4
     }, {
         text: "-",
-        row: 3,
+        row: 4,
         col: 4
     }, {
         text: "*",
-        row: 2,
+        row: 3,
         col: 4
     }, {
         text: "/",
+        row: 2,
+        col: 4
+    }, {
+        text: "Delete",
         row: 1,
-        col: 4
+        col: 1
     }, {
-        text: "Del",
-        row: 0,
-        col: 4
-    }, {
-        text: "DA",
-        row: 0,
+        text: "Clear",
+        row: 1,
         col: 3
     }];
     }
@@ -216,7 +242,10 @@ numPad.id = "numPad";
         let pad = document.createElement("div");
         pad.innerText = remain[i].text;
         pad.classList.add("button");
-        pad.style = `grid-row: ${remain[i].row+1}; grid-column: ${remain[i].col}`;
+        pad.style.gridArea = `${remain[i].row} / ${remain[i].col} / ${remain[i].row+1} / ${remain[i].col + 1}`;
+        if(remain[i].text == "Delete" || remain[i].text == "Clear"){
+            pad.style.gridArea = `${remain[i].row} / ${remain[i].col} / ${remain[i].row+1} / ${remain[i].col + 2}`;
+        }
         pad.addEventListener("mousedown", e =>{
             eventHandler(e.target.innerText);
         });
@@ -224,5 +253,5 @@ numPad.id = "numPad";
     }
 
 }
-container.appendChild(resultDiv);
+container.appendChild(outerResultDiv);
 container.appendChild(numPad);
