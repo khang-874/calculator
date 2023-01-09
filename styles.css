@@ -63,6 +63,7 @@ body{
     flex-direction: column;
     height: 90vh;
     gap: 350px;
+    background-color: #EDE7DC;
 }
 
 footer{

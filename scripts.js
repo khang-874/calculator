@@ -69,17 +69,19 @@ resultDiv.innerText = "0";
 function eventHandler(key){
     if(acceptedKey[key] == 1 || acceptedKey[key] == 5)
     {
-        if(acceptedKey[key] == 5)
-            isFloat = true;
-        currentString += key;
-        resultDiv.innerText = currentString;
+        if(currentString != "" || key != "0"){    
+            if(acceptedKey[key] == 5)
+                isFloat = true;
+            currentString += key;
+            resultDiv.innerText = currentString;
+        }
     }else if(acceptedKey[key] == 3)
     {
         if(currentString == "" || key == "DA")
         {
             firstNumber = null;
             isFloat = false;
-            operator = "";
+            operator = "";  
             resultDiv.innerText = "0";
         }else 
         {
